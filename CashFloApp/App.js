@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import { useNavigation, NavigationContainer, Link } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as WebBrowser from 'expo-web-browser';
 
 import FrontHomeButton from "./assets/components/FrontHomeButton";
 // import LoginScreen from './assets/components/Screens/Login.js';
@@ -51,14 +52,22 @@ function FrontHome() {
 }
 
 function TrueLayerLogin() {
-  const handleLoginPress = () => {
+  const [userData, setUserData] = useState(null);
+
+  const handleLoginPress = async () => {
+    const url = "https://auth.truelayer-sandbox.com/?response_type=code&client_id=sandbox-moses-10d0d3&scope=accounts%20balance%20cards%20direct_debits%20info%20offline_access%20standing_orders%20transactions&redirect_uri=https://console.truelayer.com/redirect-page&providers=uk-cs-mock%20uk-ob-all%20uk-oauth-all"
     
+    const response = await WebBrowser.openBrowserAsync(url);
+    if (response) {
+      setUserData(response.data);
+    }
   };
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.container}>
         <Image style={styles.logo} source = {logo}/>
+        <Text>User Data: {userData ? JSON.stringify(userData) : "No Data"}</Text>
       </View>
       <View style = {styles.footerContainer}>
         <FrontHomeButton label="Connect Your Bank Account" labelColor={"#49A172"} buttonColor={"#B1FFD6"} onPress={handleLoginPress}/>
